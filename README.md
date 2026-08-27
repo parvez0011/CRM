@@ -130,3 +130,6 @@ workspaces, builds the frontend, and Express serves the React application and `/
 After code changes, redeploy or run `npm install` at the application root so the frontend is rebuilt.
 The SQLite database is created at `backend/data/akbar_crm.sqlite`; that directory must be writable and
 persistent across application restarts.
+
+Never commit `backend/.env`. If a secret is exposed in version control, generate a replacement value in
+the hosting environment and restart the application to invalidate sessions signed with the exposed value.
