@@ -111,3 +111,19 @@ frontend/
 - Change `JWT_SECRET` in `backend/.env` before deploying.
 - The SQLite file in `backend/data/` is the single source of truth — back it up regularly.
 - Add HTTPS/reverse proxy (e.g. Nginx) in front of both services for production deployment.
+
+## GoDaddy Node.js Deployment
+
+Deploy the repository root as one Node.js application. The root install automatically installs both
+workspaces, builds the frontend, and Express serves the React application and `/api` from one domain.
+
+- Application root: repository root (the directory containing this `README.md` and `package.json`)
+- Node.js version: 22.5 or newer
+- Startup file: `backend/src/server.js`
+- Start command: `npm start`
+- Required environment variable: `JWT_SECRET` (use a long random production value)
+- Optional environment variable: `PORT` (normally supplied by GoDaddy)
+
+After code changes, redeploy or run `npm install` at the application root so the frontend is rebuilt.
+The SQLite database is created at `backend/data/akbar_crm.sqlite`; that directory must be writable and
+persistent across application restarts.

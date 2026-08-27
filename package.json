@@ -1,0 +1,17 @@
+{
+  "name": "akbar-handicrafts-crm",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "scripts": {
+    "build": "npm run build --workspace frontend",
+    "postinstall": "npm --prefix frontend install --include=dev && npm --prefix frontend run build",
+    "start": "node backend/src/server.js"
+  }
+}

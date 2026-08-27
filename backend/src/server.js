@@ -1,6 +1,9 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import authRoutes from './routes/auth.js';
 import customerRoutes from './routes/customers.js';
@@ -25,6 +28,8 @@ import auditLogRoutes from './routes/auditLogs.js';
 
 const app = express();
 const PORT = process.env.PORT || 4000;
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const frontendDist = path.resolve(__dirname, '../../frontend/dist');
 
 app.use(cors());
 app.use(express.json());
@@ -52,9 +57,15 @@ app.use('/api/qc', qcRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/audit-logs', auditLogRoutes);
 
-app.use((req, res) => {
-  res.status(404).json({ error: 'Not found' });
-});
+if (fs.existsSync(frontendDist)) {
+  app.use(express.static(frontendDist));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api/')) return res.status(404).json({ error: 'Not found' });
+    res.sendFile(path.join(frontendDist, 'index.html'), (err) => (err ? next(err) : undefined));
+  });
+} else {
+  app.use((req, res) => res.status(404).json({ error: 'Not found' }));
+}
 
 // Centralized error handler
 app.use((err, req, res, next) => {
