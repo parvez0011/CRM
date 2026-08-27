@@ -121,7 +121,7 @@ workspaces, builds the frontend, and Express serves the React application and `/
 - Node.js version: 22.5 or newer
 - Startup file: `backend/src/server.js`
 - Start command: `npm start`
-- Required environment variable: `JWT_SECRET` (use a long random production value)
+- Required environment variable: `JWT_SECRET` (use a long random production value; without it, the app uses a secure temporary secret and signs users out after each restart)
 - Required on a new database: `ADMIN_INITIAL_PASSWORD` (at least 12 characters)
 - Optional on a new database: `ADMIN_INITIAL_EMAIL` (defaults to `admin@akbarhandicrafts.com`)
 - Optional for a separate frontend origin: `FRONTEND_URL` (comma-separated allowed origins)

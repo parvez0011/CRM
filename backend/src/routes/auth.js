@@ -5,9 +5,9 @@ import { rateLimit } from 'express-rate-limit';
 import db from '../db.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { authRequired } from '../middleware/auth.js';
+import { JWT_SECRET } from '../config/auth.js';
 
 const router = Router();
-const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 const isProduction = process.env.NODE_ENV === 'production';
 const sessionCookie = {

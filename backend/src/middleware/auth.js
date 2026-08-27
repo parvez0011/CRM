@@ -1,11 +1,6 @@
 import jwt from 'jsonwebtoken';
 import db from '../db.js';
-
-const JWT_SECRET = process.env.JWT_SECRET;
-
-if (!JWT_SECRET || JWT_SECRET.length < 32) {
-  throw new Error('JWT_SECRET must be set to a random value of at least 32 characters');
-}
+import { JWT_SECRET } from '../config/auth.js';
 
 function cookieValue(req, name) {
   const cookies = req.headers.cookie?.split(';') || [];
