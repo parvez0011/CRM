@@ -499,10 +499,15 @@ db.prepare(`
 function seed() {
   const userCount = db.prepare('SELECT COUNT(*) as c FROM users').get().c;
   if (userCount === 0) {
-    const hash = bcrypt.hashSync('admin123', 10);
+    const initialPassword = process.env.ADMIN_INITIAL_PASSWORD;
+    if (!initialPassword || initialPassword.length < 12) {
+      throw new Error('ADMIN_INITIAL_PASSWORD must be set to at least 12 characters when creating the first admin');
+    }
+    const initialEmail = (process.env.ADMIN_INITIAL_EMAIL || 'admin@akbarhandicrafts.com').trim().toLowerCase();
+    const hash = bcrypt.hashSync(initialPassword, 12);
     db.prepare(
       'INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)'
-    ).run('Akbar Admin', 'admin@akbarhandicrafts.com', hash, 'admin');
+    ).run('Akbar Admin', initialEmail, hash, 'admin');
   }
 
   const customerCount = db.prepare('SELECT COUNT(*) as c FROM customers').get().c;

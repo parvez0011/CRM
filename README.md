@@ -122,6 +122,9 @@ workspaces, builds the frontend, and Express serves the React application and `/
 - Startup file: `backend/src/server.js`
 - Start command: `npm start`
 - Required environment variable: `JWT_SECRET` (use a long random production value)
+- Required on a new database: `ADMIN_INITIAL_PASSWORD` (at least 12 characters)
+- Optional on a new database: `ADMIN_INITIAL_EMAIL` (defaults to `admin@akbarhandicrafts.com`)
+- Optional for a separate frontend origin: `FRONTEND_URL` (comma-separated allowed origins)
 - Optional environment variable: `PORT` (normally supplied by GoDaddy)
 
 After code changes, redeploy or run `npm install` at the application root so the frontend is rebuilt.

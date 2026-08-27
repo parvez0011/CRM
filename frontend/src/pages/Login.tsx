@@ -6,8 +6,8 @@ import { apiErrorMessage } from '../api/client';
 export function Login() {
   const { login, loading } = useAuth();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('admin@akbarhandicrafts.com');
-  const [password, setPassword] = useState('admin123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
   async function handleSubmit(e: FormEvent) {
@@ -31,8 +31,9 @@ export function Login() {
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && <div className="rounded bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</div>}
           <div>
-            <label className="mb-1 block text-xs font-medium text-stone-600">Email</label>
+            <label htmlFor="login-email" className="mb-1 block text-xs font-medium text-stone-600">Email</label>
             <input
+              id="login-email"
               type="email"
               required
               value={email}
@@ -41,10 +42,13 @@ export function Login() {
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-stone-600">Password</label>
+            <label htmlFor="login-password" className="mb-1 block text-xs font-medium text-stone-600">Password</label>
             <input
+              id="login-password"
               type="password"
               required
+              autoComplete="current-password"
+              maxLength={128}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full rounded border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -57,9 +61,6 @@ export function Login() {
           >
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
-          <p className="text-center text-xs text-stone-400">
-            Default admin: admin@akbarhandicrafts.com / admin123
-          </p>
         </form>
       </div>
     </div>

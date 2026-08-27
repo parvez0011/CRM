@@ -14,7 +14,9 @@ router.get(
   authRequired,
   asyncHandler(async (req, res) => {
     const row = db.prepare('SELECT * FROM company_settings WHERE id = 1').get();
-    res.json(row || {});
+    if (!row || req.user.role !== 'staff') return res.json(row || {});
+    const { bank_account_name, bank_account_no, bank_ifsc, bank_swift, bank_address, ...safeSettings } = row;
+    res.json(safeSettings);
   })
 );
 

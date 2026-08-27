@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -30,9 +31,24 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const frontendDist = path.resolve(__dirname, '../../frontend/dist');
+const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5173')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
-app.use(cors());
-app.use(express.json());
+if (process.env.NODE_ENV === 'production') app.set('trust proxy', 1);
+app.disable('x-powered-by');
+app.use(helmet());
+app.use(cors({
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    const error = new Error('Origin not allowed');
+    error.status = 403;
+    return callback(error);
+  },
+  credentials: true,
+}));
+app.use(express.json({ limit: '1mb' }));
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok', service: 'Akbar Handicrafts CRM API' }));
 
@@ -69,8 +85,10 @@ if (fs.existsSync(frontendDist)) {
 
 // Centralized error handler
 app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(err.status || 500).json({ error: err.message || 'Internal server error' });
+  const status = err.status || 500;
+  if (process.env.NODE_ENV === 'production') console.error(`Request failed (${status})`);
+  else console.error(err);
+  res.status(status).json({ error: status < 500 ? err.message : 'Internal server error' });
 });
 
 app.listen(PORT, () => {

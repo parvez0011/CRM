@@ -2,6 +2,16 @@
 // financial/status-changing actions. Call from route handlers after a mutation succeeds.
 import db from '../db.js';
 
+const sensitiveKeys = new Set(['password', 'password_hash', 'token', 'jwt_secret']);
+
+function sanitize(value) {
+  if (Array.isArray(value)) return value.map(sanitize);
+  if (!value || typeof value !== 'object') return value;
+  return Object.fromEntries(
+    Object.entries(value).map(([key, item]) => [key, sensitiveKeys.has(key.toLowerCase()) ? '[REDACTED]' : sanitize(item)])
+  );
+}
+
 export function recordAudit(req, { entity_type, entity_id, action, before, after, reason }) {
   db.prepare(
     `INSERT INTO audit_logs (user_id, user_name, entity_type, entity_id, action, before_json, after_json, reason)
@@ -12,8 +22,8 @@ export function recordAudit(req, { entity_type, entity_id, action, before, after
     entity_type,
     entity_id ?? null,
     action,
-    before !== undefined ? JSON.stringify(before) : null,
-    after !== undefined ? JSON.stringify(after) : null,
+    before !== undefined ? JSON.stringify(sanitize(before)) : null,
+    after !== undefined ? JSON.stringify(sanitize(after)) : null,
     reason || null
   );
 }
