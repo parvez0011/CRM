@@ -39,14 +39,18 @@ const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5173')
 if (process.env.NODE_ENV === 'production') app.set('trust proxy', 1);
 app.disable('x-powered-by');
 app.use(helmet());
-app.use(cors({
-  origin(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+app.use(cors((req, callback) => {
+  const origin = req.get('Origin');
+  const applicationOrigin = `${req.protocol}://${req.get('host')}`;
+  const originAllowed = !origin || allowedOrigins.includes(origin) || origin === applicationOrigin;
+
+  if (!originAllowed) {
     const error = new Error('Origin not allowed');
     error.status = 403;
     return callback(error);
-  },
-  credentials: true,
+  }
+
+  return callback(null, { origin: true, credentials: true });
 }));
 app.use(express.json({ limit: '1mb' }));
 
